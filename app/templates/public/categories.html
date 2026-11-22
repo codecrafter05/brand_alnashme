@@ -1,0 +1,17 @@
+{% extends 'public/base.html' %}
+{% block title %}{{ t('categories') }} | {{ s.store_name }}{% endblock %}
+{% block content %}
+<div class="wrap">
+  <div class="page-head"><h1>{{ t('categories') }}</h1><p>{{ t('categories_sub') }}</p></div>
+  {% if categories %}
+  <div class="cat-grid" style="padding-bottom:80px">
+    {% for c in categories %}
+    <a class="cat-card" href="/category/{{ c.id }}">
+      <div class="img">{% if c.image %}<img src="{{ c.image }}" alt="{{ L(c,'name') }}" loading="lazy">{% endif %}</div>
+      <div class="cap"><div><h3>{{ L(c,'name') }}</h3><small>{{ counts[c.id] }} {{ t('products') }}</small></div><span class="arrow">→</span></div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}<p class="empty">{{ t('no_products') }}</p>{% endif %}
+</div>
+{% endblock %}

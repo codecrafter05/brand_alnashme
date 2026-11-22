@@ -1,0 +1,39 @@
+{% extends 'admin/base.html' %}
+{% block title %}{{ _('تعديل منتج') if p.id else _('منتج جديد') }}{% endblock %}
+{% block content %}
+<div class="top"><h1>{{ _('تعديل المنتج') if p.id else _('منتج جديد') }}</h1><a class="btn ghost" href="/admin/products">{{ _('رجوع') }}</a></div>
+{% if errors %}<div class="errors"><ul>{% for e in errors %}<li>{{ _(e[0], **e[1]) }}</li>{% endfor %}</ul></div>{% endif %}
+<form method="post" enctype="multipart/form-data">
+  <input type="hidden" name="csrf_token" value="{{ csrf }}">
+  <input type="hidden" name="variants_json" value="[]">
+  <div class="grid2" style="align-items:start">
+    <div class="card"><h2>{{ _('بيانات المنتج') }}</h2>
+      <div class="f"><label>{{ _('القسم') }}</label><select name="category_id">{% for c in categories %}<option value="{{ c.id }}" {{ 'selected' if c.id == p.category_id }}>{{ c.name_ar }}</option>{% endfor %}</select></div>
+      <div class="row2">
+        <div class="f"><label>{{ _('اسم المنتج (عربي)') }}</label><input name="name_ar" value="{{ p.name_ar }}" required></div>
+        <div class="f"><label>Product name (English)</label><input name="name_en" dir="ltr" value="{{ p.name_en }}" required></div>
+      </div>
+      <div class="f"><label>{{ _('الوصف (عربي)') }}</label><textarea name="desc_ar">{{ p.desc_ar or '' }}</textarea></div>
+      <div class="f"><label>Description (English)</label><textarea name="desc_en" dir="ltr">{{ p.desc_en or '' }}</textarea></div>
+    </div>
+    <div class="card"><h2>{{ _('الصورة والظهور') }}</h2>
+      <div class="img-pick"><div id="prev">{% if p.image %}<img src="{{ p.image }}" alt="">{% else %}<div class="ph">{{ _('بدون صورة') }}</div>{% endif %}</div>
+        <div><input type="file" name="image" accept="image/*" data-preview="#prev">
+        {% if p.image %}<label class="check" style="margin-top:10px"><input type="checkbox" name="remove_image"> {{ _('حذف الصورة') }}</label>{% endif %}
+        <div class="hint">{{ _('يفضل صورة طولية') }} 4:5 — {{ _('تتحول تلقائياً لصيغة خفيفة') }}</div></div></div>
+      <hr style="border:0;border-top:1px solid var(--line);margin:20px 0">
+      <label class="check"><input type="checkbox" name="is_active" {{ 'checked' if p.is_active }}> {{ _('ظاهر في المتجر') }}</label>
+      <label class="check"><input type="checkbox" name="is_featured" {{ 'checked' if p.is_featured }}> {{ _('منتج مميز (يطلع في الصفحة الرئيسية)') }}</label>
+    </div>
+  </div>
+  <div class="card"><h2>{{ _('الأحجام والأسعار') }} <small>{{ _('لكل حجم: السعر، وسعر بعد التخفيض (اختياري)، والكمية المتوفرة') }}</small></h2>
+    <div class="editor vars" id="variants">
+      <div class="er eh"><span>{{ _('الحجم (عربي)') }}</span><span>{{ _('الحجم') }} (English)</span><span>{{ _('السعر (د.ب)') }}</span><span>{{ _('بعد التخفيض') }}</span><span>{{ _('الكمية') }}</span><span></span></div>
+      <div data-rows></div>
+      <div class="add"><button type="button" class="btn ghost sm" data-add-row>+ {{ _('إضافة حجم') }}</button></div>
+    </div>
+    <script type="application/json" id="variants-data">{{ p.variants|tojson }}</script>
+  </div>
+  <button class="btn">{{ _('حفظ المنتج') }}</button>
+</form>
+{% endblock %}

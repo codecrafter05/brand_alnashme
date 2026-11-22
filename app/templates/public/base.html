@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="{{ lang }}" dir="{{ dir }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ s.store_name }} — {{ S("tagline") }}{% endblock %}</title>
+<meta name="description" content="{% block desc %}{{ S('about_text')|truncate(155) }}{% endblock %}">
+<link rel="icon" href="/static/img/logo-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:wght@500;600&family=Jost:wght@400;500&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/site.css?v=2">
+</head>
+<body>
+{% set ann = S('announcement') %}
+{% if ann or (s.free_delivery_enabled == '1') %}
+<div class="announce">{{ ann }}{% if s.free_delivery_enabled == '1' %}{% if ann %} &nbsp;·&nbsp; {% endif %}{{ t('free_over', amount=fmt(s.free_delivery_threshold) ~ ' ' ~ t('currency')) }}{% endif %}</div>
+{% endif %}
+
+<header class="site-header">
+  <div class="wrap header-in">
+    <button class="tool menu-btn" data-open-menu aria-label="{{ t('menu') }}">
+      <svg viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></svg>
+    </button>
+    <nav class="nav" aria-label="Main">
+      <a href="/" class="{{ 'on' if path == '/' }}">{{ t('home') }}</a>
+      <a href="/categories" class="{{ 'on' if path == '/categories' or path.startswith('/category/') }}">{{ t('categories') }}</a>
+      <a href="/products" class="{{ 'on' if path == '/products' or path.startswith('/product/') }}">{{ t('products') }}</a>
+      <a href="/sale" class="{{ 'on' if path == '/sale' }}">{{ t('sale') }}</a>
+    </nav>
+    <a class="brand" href="/" aria-label="{{ s.store_name }}">
+      <img src="/static/img/logo-mark.png" alt="">
+      <b>{{ s.store_name }}</b>
+    </a>
+    <div class="tools">
+      <a class="tool lang-link" href="/lang/{{ 'en' if lang == 'ar' else 'ar' }}?next={{ request.url.path }}{{ ('%3F' ~ request.url.query|urlencode) if request.url.query else '' }}">{{ t('language') }}</a>
+      <button class="tool" data-open-cart aria-label="{{ t('cart') }}">
+        <svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <span class="cart-count" data-cart-count data-n="0">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="mobile-nav" data-mobile-nav aria-label="Menu">
+  <button class="icon-btn" data-close-menu aria-label="{{ t('close') }}" style="align-self:flex-end">&times;</button>
+  <a href="/">{{ t('home') }}</a>
+  <a href="/categories">{{ t('categories') }}</a>
+  {% for c in nav_categories %}<a class="sub" href="/category/{{ c.id }}">{{ L(c,'name') }}</a>{% endfor %}
+  <a href="/products">{{ t('products') }}</a>
+  <a href="/sale">{{ t('sale') }}</a>
+  <a href="/lang/{{ 'en' if lang == 'ar' else 'ar' }}?next={{ request.url.path }}" style="font-family:var(--font-body);font-size:16px">{{ t('language') }}</a>
+</nav>
+
+<main>{% block content %}{% endblock %}</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img src="/static/img/logo-mark-white.png" alt="{{ s.store_name }}">
+        <p>{{ S('tagline') }}</p>
+      </div>
+      <div>
+        <h4>{{ t('categories') }}</h4>
+        <ul>{% for c in nav_categories %}<li><a href="/category/{{ c.id }}">{{ L(c,'name') }}</a></li>{% endfor %}</ul>
+      </div>
+      <div>
+        <h4>{{ t('contact') }}</h4>
+        <ul>
+          <li><a href="https://wa.me/{{ s.whatsapp_number }}" target="_blank" rel="noopener">WhatsApp</a></li>
+          {% if s.contact_phone %}<li><a href="tel:{{ s.contact_phone }}" dir="ltr">{{ s.contact_phone }}</a></li>{% endif %}
+          {% if s.contact_email %}<li><a href="mailto:{{ s.contact_email }}">{{ s.contact_email }}</a></li>{% endif %}
+        </ul>
+      </div>
+      <div>
+        <h4>{{ t('follow_us') }}</h4>
+        <ul>
+          {% for key, label in [('instagram','Instagram'),('tiktok','TikTok'),('snapchat','Snapchat'),('facebook','Facebook'),('x_twitter','X')] %}
+            {% if s[key] %}<li><a href="{{ s[key] }}" target="_blank" rel="noopener">{{ label }}</a></li>{% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="copy"><span>&copy; {{ now_year }} {{ s.store_name }}. {{ S('footer_text') }}</span></div>
+  </div>
+</footer>
+
+{% include 'public/partials/drawer.html' %}
+<div class="toast" data-toast></div>
+<script>window.STORE = {{ store|tojson }};</script>
+<script src="/static/js/app.js?v=1" defer></script>
+</body>
+</html>

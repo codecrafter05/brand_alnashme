@@ -1,0 +1,23 @@
+{% extends 'admin/base.html' %}
+{% block title %}{{ _('الأقسام') }}{% endblock %}
+{% block content %}
+<div class="top"><h1>{{ _('الأقسام') }}</h1><div class="acts"><a class="btn" href="/admin/categories/new">+ {{ _('قسم جديد') }}</a></div></div>
+<div class="card">
+{% if categories %}
+<table class="tbl"><thead><tr><th>{{ _('الصورة') }}</th><th>{{ _('الاسم') }}</th><th>{{ _('المنتجات') }}</th><th>{{ _('الحالة') }}</th><th>{{ _('الترتيب') }}</th><th></th></tr></thead><tbody>
+{% for c in categories %}
+<tr>
+  <td>{% if c.image %}<img class="thumb" src="{{ c.image }}" alt="">{% endif %}</td>
+  <td><b>{{ c.name_ar }}</b><br><span class="muted tiny" dir="ltr">{{ c.name_en }}</span></td>
+  <td>{{ counts.get(c.id, 0) }}</td>
+  <td><form method="post" action="/admin/categories/{{ c.id }}/toggle"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="tag {{ 'on' if c.is_active }}" style="cursor:pointer">{{ _('ظاهر') if c.is_active else _('مخفي') }}</button></form></td>
+  <td>
+    <form method="post" action="/admin/categories/{{ c.id }}/move"><input type="hidden" name="csrf_token" value="{{ csrf }}"><input type="hidden" name="direction" value="up"><button class="btn ghost sm" {{ 'disabled' if loop.first }}>↑</button></form>
+    <form method="post" action="/admin/categories/{{ c.id }}/move"><input type="hidden" name="csrf_token" value="{{ csrf }}"><input type="hidden" name="direction" value="down"><button class="btn ghost sm" {{ 'disabled' if loop.last }}>↓</button></form>
+  </td>
+  <td><div class="acts"><a class="btn ghost sm" href="/admin/categories/{{ c.id }}/edit">{{ _('تعديل') }}</a>
+    <form method="post" action="/admin/categories/{{ c.id }}/delete" data-confirm="{{ _('حذف القسم «{name}»؟', name=c.name_ar) }}"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="btn danger sm">{{ _('حذف') }}</button></form></div></td>
+</tr>{% endfor %}</tbody></table>
+{% else %}<p class="empty">{{ _('ما فيه أقسام بعد') }}. {{ _('أضف أول قسم') }}.</p>{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'admin/base.html' %}
+{% block title %}{{ _('الإعدادات') }}{% endblock %}
+{% block content %}
+<div class="top"><h1>{{ _('الإعدادات') }}</h1></div>
+<form method="post" enctype="multipart/form-data">
+  <input type="hidden" name="csrf_token" value="{{ csrf }}">
+  <div class="card"><h2>{{ _('الواتساب والتوصيل') }}</h2>
+    <div class="f" style="max-width:420px"><label>{{ _('رقم الواتساب لاستقبال الطلبات') }}</label><input name="whatsapp_number" dir="ltr" value="{{ s.whatsapp_number }}" required><div class="hint">{{ _('بالصيغة الدولية مثل 97337331306 (إذا كتبت 8 أرقام يضاف رمز البحرين تلقائياً)') }}</div></div>
+    <div class="switch-row"><div><b>{{ _('التوصيل المجاني') }}</b><div class="muted tiny">{{ _('إذا فعلته، أي طلب يوصل للمبلغ المحدد يكون توصيله مجاني') }}</div></div>
+      <label class="check" style="margin:0"><input type="checkbox" name="free_delivery_enabled" {{ 'checked' if s.free_delivery_enabled == '1' }}> {{ _('مفعّل') }}</label></div>
+    <div class="f" style="max-width:260px"><label>{{ _('الحد الأدنى للتوصيل المجاني (د.ب)') }}</label><input type="number" name="free_delivery_threshold" step="0.001" min="0" value="{{ s.free_delivery_threshold }}"></div>
+  </div>
+  <div class="card"><h2>{{ _('الصفحة الرئيسية (الهيرو)') }}</h2>
+    <div class="f"><label>{{ _('صورة الهيرو') }}</label><div class="img-pick"><div id="prev"><img src="{{ s.hero_image }}" alt=""></div><div><input type="file" name="hero_image" accept="image/*" data-preview="#prev"><div class="hint">{{ _('يفضل صورة طولية') }} 4:5</div></div></div></div>
+    <div class="row2"><div class="f"><label>{{ _('العنوان الصغير (عربي)') }}</label><input name="hero_eyebrow_ar" value="{{ s.hero_eyebrow_ar }}"></div><div class="f"><label>Eyebrow (English)</label><input name="hero_eyebrow_en" dir="ltr" value="{{ s.hero_eyebrow_en }}"></div></div>
+    <div class="row2"><div class="f"><label>{{ _('العنوان الرئيسي (عربي)') }}</label><input name="hero_title_ar" value="{{ s.hero_title_ar }}"></div><div class="f"><label>Main title (English)</label><input name="hero_title_en" dir="ltr" value="{{ s.hero_title_en }}"></div></div>
+    <div class="row2"><div class="f"><label>{{ _('النص (عربي)') }}</label><textarea name="hero_subtitle_ar">{{ s.hero_subtitle_ar }}</textarea></div><div class="f"><label>Text (English)</label><textarea name="hero_subtitle_en" dir="ltr">{{ s.hero_subtitle_en }}</textarea></div></div>
+    <div class="row2"><div class="f"><label>{{ _('نص الزر (عربي)') }}</label><input name="hero_button_ar" value="{{ s.hero_button_ar }}"></div><div class="f"><label>Button (English)</label><input name="hero_button_en" dir="ltr" value="{{ s.hero_button_en }}"></div></div>
+  </div>
+  <div class="card"><h2>{{ _('نصوص المتجر') }}</h2>
+    <div class="row2"><div class="f"><label>{{ _('اسم المتجر') }}</label><input name="store_name" dir="ltr" value="{{ s.store_name }}"></div><div></div></div>
+    <div class="row2"><div class="f"><label>{{ _('الشعار النصي (عربي)') }}</label><input name="tagline_ar" value="{{ s.tagline_ar }}"></div><div class="f"><label>Tagline (English)</label><input name="tagline_en" dir="ltr" value="{{ s.tagline_en }}"></div></div>
+    <div class="row2"><div class="f"><label>{{ _('شريط الإعلان العلوي (عربي)') }}</label><input name="announcement_ar" value="{{ s.announcement_ar }}"></div><div class="f"><label>Announcement bar (English)</label><input name="announcement_en" dir="ltr" value="{{ s.announcement_en }}"></div></div>
+    <div class="row2"><div class="f"><label>{{ _('عنوان قسم «من نحن» (عربي)') }}</label><input name="about_title_ar" value="{{ s.about_title_ar }}"></div><div class="f"><label>About title (English)</label><input name="about_title_en" dir="ltr" value="{{ s.about_title_en }}"></div></div>
+    <div class="row2"><div class="f"><label>{{ _('نص «من نحن» (عربي)') }}</label><textarea name="about_text_ar">{{ s.about_text_ar }}</textarea></div><div class="f"><label>About text (English)</label><textarea name="about_text_en" dir="ltr">{{ s.about_text_en }}</textarea></div></div>
+    <div class="row2"><div class="f"><label>{{ _('نص أسفل الصفحة (عربي)') }}</label><input name="footer_text_ar" value="{{ s.footer_text_ar }}"></div><div class="f"><label>Footer text (English)</label><input name="footer_text_en" dir="ltr" value="{{ s.footer_text_en }}"></div></div>
+  </div>
+  <div class="card"><h2>{{ _('التواصل وروابط السوشل ميديا') }} <small>{{ _('اترك الحقل فاضي لإخفاء الرابط') }}</small></h2>
+    <div class="row2"><div class="f"><label>{{ _('رقم الهاتف للعرض') }}</label><input name="contact_phone" dir="ltr" value="{{ s.contact_phone }}"></div><div class="f"><label>{{ _('الإيميل') }}</label><input name="contact_email" dir="ltr" value="{{ s.contact_email }}"></div></div>
+    <div class="row2"><div class="f"><label>Instagram</label><input name="instagram" dir="ltr" placeholder="https://instagram.com/..." value="{{ s.instagram }}"></div><div class="f"><label>TikTok</label><input name="tiktok" dir="ltr" value="{{ s.tiktok }}"></div></div>
+    <div class="row2"><div class="f"><label>Snapchat</label><input name="snapchat" dir="ltr" value="{{ s.snapchat }}"></div><div class="f"><label>Facebook</label><input name="facebook" dir="ltr" value="{{ s.facebook }}"></div></div>
+    <div class="row2"><div class="f"><label>X (Twitter)</label><input name="x_twitter" dir="ltr" value="{{ s.x_twitter }}"></div><div></div></div>
+  </div>
+  <button class="btn">{{ _('حفظ الإعدادات') }}</button>
+</form>
+
+<form class="card" id="account" method="post" action="/admin/settings/account" style="margin-top:28px;max-width:560px">
+  <input type="hidden" name="csrf_token" value="{{ csrf }}"><h2>{{ _('بيانات الدخول') }}</h2>
+  <div class="f"><label>{{ _('اسم المستخدم') }}</label><input name="username" value="{{ username }}" required></div>
+  <div class="f"><label>{{ _('كلمة المرور الحالية') }}</label><input type="password" name="current_password" autocomplete="current-password" required></div>
+  <div class="f"><label>{{ _('كلمة المرور الجديدة') }} <span class="muted">({{ _('اتركها فاضية إذا ما تبي تغيرها)') }}</span></label><input type="password" name="new_password" autocomplete="new-password"></div>
+  <button class="btn">{{ _('تحديث بيانات الدخول') }}</button>
+</form>
+{% endblock %}

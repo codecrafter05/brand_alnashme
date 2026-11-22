@@ -1,0 +1,16 @@
+{% extends 'admin/base.html' %}
+{% block title %}{{ _('التوصيل') }}{% endblock %}
+{% block content %}
+<div class="top"><h1>{{ _('مناطق التوصيل') }}</h1></div>
+<form class="card" method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf }}"><input type="hidden" name="zones_json" value="[]">
+  <p class="muted" style="margin-top:0">{{ _('أضف مناطق البحرين اللي توصلها وحدد سعر التوصيل لكل منطقة، وبعدين اضغط حفظ') }}. {{ _('تقدر ترجع تضيف مناطق ثانية بأي وقت') }}.</p>
+  <div class="editor zones" id="zones">
+    <div class="er eh"><span>{{ _('المنطقة (عربي)') }}</span><span>Area (English)</span><span>{{ _('سعر التوصيل (د.ب)') }}</span><span>{{ _('الحالة') }}</span><span></span></div>
+    <div data-rows></div>
+    <div class="add"><button type="button" class="btn ghost sm" data-add-row>+ {{ _('إضافة منطقة') }}</button></div>
+  </div>
+  <script type="application/json" id="zones-data">{{ zones_data|tojson }}</script>
+  <div style="margin-top:18px"><button class="btn">{{ _('حفظ المناطق') }}</button></div>
+</form>
+{% endblock %}

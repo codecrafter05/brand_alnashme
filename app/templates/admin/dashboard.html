@@ -1,0 +1,36 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<div class="top"><h1>{{ _('لوحة التحكم') }}</h1>
+  <div class="seg">{% for k, l in [('7',_('7 أيام')),('30',_('30 يوم')),('90',_('90 يوم')),('all',_('الكل'))] %}<a class="{{ 'on' if days == k }}" href="/admin?days={{ k }}">{{ l }}</a>{% endfor %}</div></div>
+
+<div class="stats">
+  <div class="stat"><span>{{ _('عدد الطلبات') }}</span><b>{{ st.orders_count }}</b><small>{{ _('بدون الملغية') }}</small></div>
+  <div class="stat"><span>{{ _('المبيعات المؤكدة') }}</span><b>{{ fmt(st.revenue) }}</b><small>{{ _('د.ب — مؤكد + تم التوصيل') }}</small></div>
+  <div class="stat"><span>{{ _('طلبات تنتظر التأكيد') }}</span><b>{{ st.pending_count }}</b><small>{{ _('بقيمة {v} د.ب', v=fmt(st.pending_value)) }}</small></div>
+  <div class="stat"><span>{{ _('مبالغ التوصيل') }}</span><b>{{ fmt(st.fees) }}</b><small>{{ _('د.ب — من الطلبات المؤكدة') }}</small></div>
+  <div class="stat"><span>{{ _('العملاء') }}</span><b>{{ st.customers }}</b><small>{{ _('حسب رقم الهاتف') }}</small></div>
+  <div class="stat"><span>{{ _('متوسط قيمة الطلب') }}</span><b>{{ fmt(st.aov) }}</b><small>{{ _('د.ب') }}</small></div>
+  <div class="stat"><span>{{ _('زوار الموقع') }}</span><b>{{ st.visitors }}</b><small>{{ _('اليوم: {t} · مشاهدات: {v}', t=st.today_visitors, v=st.views) }}</small></div>
+  <div class="stat"><span>{{ _('نسبة التحويل') }}</span><b>{{ '%.1f'|format(st.conversion) }}%</b><small>{{ _('طلبات ÷ زوار') }}</small></div>
+</div>
+
+<div class="grid2">
+  <div class="card"><h2>{{ _('الطلبات يومياً') }} <small>{{ _('آخر {n} يوم', n=st.labels|length) }}</small></h2>{{ charts.orders }}</div>
+  <div class="card"><h2>{{ _('المبيعات يومياً (د.ب)') }}</h2>{{ charts.revenue }}</div>
+</div>
+<div class="card"><h2>{{ _('الزوار يومياً') }} <small>{{ _('زائر فريد') }}</small></h2>{{ charts.visitors }}</div>
+
+<div class="grid2">
+  <div class="card"><h2>{{ _('الأكثر طلباً') }}</h2>
+    {% if st.top_products %}<table class="tbl"><thead><tr><th>{{ _('المنتج') }}</th><th class="num">{{ _('الكمية') }}</th><th class="num">{{ _('المبلغ') }}</th></tr></thead><tbody>
+    {% for p in st.top_products %}<tr><td>{{ p.name_ar }}</td><td class="num">{{ p.qty }}</td><td class="num">{{ fmt(p.revenue) }}</td></tr>{% endfor %}</tbody></table>
+    {% else %}<p class="empty">{{ _('لا توجد بيانات بعد') }}</p>{% endif %}</div>
+  <div class="card"><h2>{{ _('حسب منطقة التوصيل') }}</h2>
+    {% if st.top_zones %}<table class="tbl"><thead><tr><th>{{ _('المنطقة') }}</th><th class="num">{{ _('الطلبات') }}</th><th class="num">{{ _('التوصيل') }}</th></tr></thead><tbody>
+    {% for z in st.top_zones %}<tr><td>{{ z.name }}</td><td class="num">{{ z.orders }}</td><td class="num">{{ fmt(z.fees) }}</td></tr>{% endfor %}</tbody></table>
+    {% else %}<p class="empty">{{ _('لا توجد بيانات بعد') }}</p>{% endif %}</div>
+</div>
+<div class="card"><h2>{{ _('حالات الطلبات') }}</h2>
+  <div style="display:flex;gap:12px;flex-wrap:wrap">
+  {% for k in ['new','confirmed','delivered','cancelled'] %}<a href="/admin/orders?status={{ k }}" class="st st-{{ k }}">{{ status_labels[k] }}: {{ st.status_counts.get(k, 0) }}</a>{% endfor %}</div></div>
+{% endblock %}

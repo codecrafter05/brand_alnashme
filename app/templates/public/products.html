@@ -1,0 +1,21 @@
+{% extends 'public/base.html' %}
+{% from 'public/partials/product_card.html' import card with context %}
+{% block title %}{{ t('all_products') }} | {{ s.store_name }}{% endblock %}
+{% block content %}
+<div class="wrap">
+  <div class="page-head"><h1>{{ t('all_products') }}</h1><p>{{ t('products_sub') }}</p></div>
+  <div class="toolbar">
+    <div class="chips">
+      <a class="chip {{ 'on' if not current_cat }}" href="/products{{ '?q=' ~ q|urlencode if q }}">{{ t('all') }}</a>
+      {% for c in categories %}<a class="chip {{ 'on' if current_cat == c.id }}" href="/products?cat={{ c.id }}{{ '&q=' ~ q|urlencode if q }}">{{ L(c,'name') }}</a>{% endfor %}
+    </div>
+    <form class="search" method="get" action="/products">
+      {% if current_cat %}<input type="hidden" name="cat" value="{{ current_cat }}">{% endif %}
+      <input name="q" value="{{ q }}" placeholder="{{ t('search_placeholder') }}" aria-label="{{ t('search') }}">
+      <button type="submit">{{ t('search') }}</button>
+    </form>
+  </div>
+  {% if products %}<div class="grid" style="padding-bottom:80px">{% for p in products %}{{ card(p) }}{% endfor %}</div>
+  {% else %}<p class="empty">{{ t('no_products') }}</p>{% endif %}
+</div>
+{% endblock %}

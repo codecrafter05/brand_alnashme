@@ -1,0 +1,19 @@
+{% extends 'admin/base.html' %}
+{% block title %}{{ _('تعديل قسم') if cat else _('قسم جديد') }}{% endblock %}
+{% block content %}
+<div class="top"><h1>{{ _('تعديل القسم') if cat else _('قسم جديد') }}</h1><a class="btn ghost" href="/admin/categories">{{ _('رجوع') }}</a></div>
+<form class="card" method="post" enctype="multipart/form-data" style="max-width:720px">
+  <input type="hidden" name="csrf_token" value="{{ csrf }}">
+  <div class="row2">
+    <div class="f"><label>{{ _('اسم القسم (عربي)') }}</label><input name="name_ar" value="{{ cat.name_ar if cat }}" required></div>
+    <div class="f"><label>Category name (English)</label><input name="name_en" dir="ltr" value="{{ cat.name_en if cat }}" required></div>
+  </div>
+  <div class="f"><label>{{ _('صورة القسم') }}</label>
+    <div class="img-pick"><div id="prev">{% if cat and cat.image %}<img src="{{ cat.image }}" alt="">{% else %}<div class="ph">{{ _('بدون صورة') }}</div>{% endif %}</div>
+      <div><input type="file" name="image" accept="image/*" data-preview="#prev">
+      {% if cat and cat.image %}<label class="check" style="margin-top:10px"><input type="checkbox" name="remove_image"> {{ _('حذف الصورة') }}</label>{% endif %}
+      <div class="hint">{{ _('يفضل صورة طولية') }} 4:5</div></div></div></div>
+  <label class="check"><input type="checkbox" name="is_active" {{ 'checked' if (not cat) or cat.is_active }}> {{ _('ظاهر في المتجر') }}</label>
+  <button class="btn">{{ _('حفظ') }}</button>
+</form>
+{% endblock %}

@@ -1,0 +1,60 @@
+<div class="overlay" data-overlay></div>
+<aside class="drawer" data-drawer aria-hidden="true" role="dialog" aria-label="{{ t('cart') }}">
+
+  <!-- CART -->
+  <section class="dv" data-view="cart">
+    <div class="dv-head">
+      <h3>{{ t('cart') }}</h3>
+      <button class="icon-btn" data-close aria-label="{{ t('close') }}">&times;</button>
+    </div>
+    <div class="dv-body" data-cart-body></div>
+    <div class="dv-foot" data-cart-foot hidden>
+      <p class="fd" data-fd hidden><span data-fd-text></span><span class="bar"><i data-fd-bar></i></span></p>
+      <div class="sum"><div><span>{{ t('subtotal') }}</span><b data-sub>0.000</b></div></div>
+      <button class="btn block" data-go-checkout>{{ t('checkout') }}</button>
+    </div>
+  </section>
+
+  <!-- CHECKOUT -->
+  <section class="dv" data-view="checkout" hidden>
+    <div class="dv-head">
+      <h3><button class="icon-btn" data-back aria-label="{{ t('back') }}" style="font-size:18px">{{ '→' if lang == 'ar' else '←' }}</button>{{ t('checkout') }}</h3>
+      <button class="icon-btn" data-close aria-label="{{ t('close') }}">&times;</button>
+    </div>
+    <form class="dv-body form" data-form novalidate autocomplete="on">
+      <div class="form-error" data-form-error hidden></div>
+      <div class="f" data-f="name"><label for="f-name">{{ t('full_name') }}</label><input id="f-name" name="name" autocomplete="name" required><div class="em"></div></div>
+      <div class="f" data-f="email"><label for="f-email">{{ t('email') }}</label><input id="f-email" name="email" type="email" autocomplete="email" dir="ltr" required><div class="em"></div></div>
+      <div class="f" data-f="phone"><label for="f-phone">{{ t('phone') }}</label><input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" required><div class="em"></div></div>
+      <div class="f" data-f="zone_id"><label for="f-zone">{{ t('delivery_area') }}</label>
+        <select id="f-zone" name="zone_id" required>
+          <option value="">{{ t('select_area') }}</option>
+          {% for z in zones %}<option value="{{ z.id }}">{{ L(z,'name') }}</option>{% endfor %}
+        </select><div class="em"></div></div>
+      <div class="two">
+        <div class="f" data-f="house"><label for="f-house">{{ t('house') }}</label><input id="f-house" name="house" required><div class="em"></div></div>
+        <div class="f" data-f="road"><label for="f-road">{{ t('road') }}</label><input id="f-road" name="road" required><div class="em"></div></div>
+        <div class="f" data-f="block"><label for="f-block">{{ t('block') }}</label><input id="f-block" name="block" required><div class="em"></div></div>
+      </div>
+      <div class="f" data-f="note"><label for="f-note">{{ t('note') }}</label><textarea id="f-note" name="note" maxlength="1000"></textarea></div>
+      <div class="sum" style="margin-top:6px">
+        <div><span>{{ t('subtotal') }}</span><span data-co-sub>—</span></div>
+        <div><span>{{ t('delivery') }}</span><span data-co-fee>—</span></div>
+        <div class="tot"><span>{{ t('total') }}</span><span data-co-total>—</span></div>
+      </div>
+      <button class="btn block" type="submit" data-submit>{{ t('place_order') }}</button>
+    </form>
+  </section>
+
+  <!-- DONE -->
+  <section class="dv" data-view="done" hidden>
+    <div class="dv-head"><h3>&nbsp;</h3><button class="icon-btn" data-close aria-label="{{ t('close') }}">&times;</button></div>
+    <div class="done">
+      <div class="tick"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h3>{{ t('order_ready') }}</h3>
+      <span class="num">{{ t('order_number') }}: <b data-order-num></b></span>
+      <p>{{ t('order_ready_msg') }}</p>
+      <a class="btn" data-wa-link href="#" target="_self">{{ t('open_whatsapp') }}</a>
+    </div>
+  </section>
+</aside>

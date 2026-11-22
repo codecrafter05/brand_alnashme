@@ -1,0 +1,60 @@
+{% extends 'public/base.html' %}
+{% from 'public/partials/product_card.html' import card with context %}
+{% block content %}
+<section class="wrap hero">
+  <div>
+    {% if S('hero_eyebrow') %}<p class="eyebrow">{{ S('hero_eyebrow') }}</p>{% endif %}
+    <h1>{{ S('hero_title') }}</h1>
+    <p>{{ S('hero_subtitle') }}</p>
+    <a class="btn" href="/products">{{ S('hero_button') or t('shop_now') }}</a>
+  </div>
+  <div class="hero-art"><img src="{{ s.hero_image }}" alt="{{ s.store_name }}" fetchpriority="high"></div>
+</section>
+
+{% if categories %}
+<section class="section tint">
+  <div class="wrap">
+    <div class="sec-head"><h2>{{ t('shop_by_category') }}</h2><a href="/categories">{{ t('view_all') }}</a></div>
+    <div class="cat-grid">
+      {% for c in categories %}
+      <a class="cat-card" href="/category/{{ c.id }}">
+        <div class="img">{% if c.image %}<img src="{{ c.image }}" alt="{{ L(c,'name') }}" loading="lazy">{% endif %}</div>
+        <div class="cap"><h3>{{ L(c,'name') }}</h3><span class="arrow">→</span></div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if featured %}
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><h2>{{ t('featured') }}</h2><a href="/products">{{ t('all_products') }}</a></div>
+    <div class="grid">{% for p in featured %}{{ card(p) }}{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+
+{% if sale_products %}
+<section class="section tint">
+  <div class="wrap">
+    <div class="sec-head"><h2>{{ t('on_sale_now') }}</h2><a href="/sale">{{ t('view_all') }}</a></div>
+    <div class="grid">{% for p in sale_products %}{{ card(p) }}{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+
+{% if S('about_text') %}
+<section class="section">
+  <div class="wrap about">
+    <div>
+      <p class="eyebrow">{{ t('about') }}</p>
+      <h2>{{ S('about_title') }}</h2>
+      <p>{{ S('about_text') }}</p>
+    </div>
+    <img src="/static/demo/wall.jpg" alt="" loading="lazy">
+  </div>
+</section>
+{% endif %}
+{% endblock %}

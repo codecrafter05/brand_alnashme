@@ -1,0 +1,29 @@
+{% extends 'admin/base.html' %}
+{% block title %}{{ _('المنتجات') }}{% endblock %}
+{% block content %}
+<div class="top"><h1>{{ _('المنتجات') }}</h1><div class="acts"><a class="btn" href="/admin/products/new{{ '?cat=' ~ cat if cat }}">+ {{ _('منتج جديد') }}</a></div></div>
+<form class="filters" method="get">
+  <select class="in" name="cat" onchange="this.form.submit()"><option value="">{{ _('كل الأقسام') }}</option>{% for c in categories %}<option value="{{ c.id }}" {{ 'selected' if cat == c.id }}>{{ c.name_ar }}</option>{% endfor %}</select>
+  <select class="in" name="status" onchange="this.form.submit()"><option value="">{{ _('كل الحالات') }}</option><option value="active" {{ 'selected' if status == 'active' }}>{{ _('ظاهر') }}</option><option value="hidden" {{ 'selected' if status == 'hidden' }}>{{ _('مخفي') }}</option></select>
+  <input class="in" type="search" name="q" value="{{ q }}" placeholder="{{ _('بحث بالاسم') }}"><button class="btn ghost sm">{{ _('بحث') }}</button>
+</form>
+<div class="card">
+{% if products %}
+<table class="tbl"><thead><tr><th></th><th>{{ _('المنتج') }}</th><th>{{ _('القسم') }}</th><th>{{ _('الأسعار') }}</th><th>{{ _('المخزون') }}</th><th>{{ _('الحالة') }}</th><th></th></tr></thead><tbody>
+{% for p in products %}{% set sm = summary(p) %}
+<tr>
+  <td>{% if p.image %}<img class="thumb" src="{{ p.image }}" alt="">{% endif %}</td>
+  <td><b>{{ p.name_ar }}</b><br><span class="muted tiny" dir="ltr">{{ p.name_en }}</span></td>
+  <td>{{ p.category.name_ar }}</td>
+  <td>{% for v in p.variants %}<div class="tiny">{{ v.label_ar }}: {% if on_sale(v) %}<del class="muted">{{ fmt(v.price) }}</del> <b>{{ fmt(eff_price(v)) }}</b>{% else %}{{ fmt(v.price) }}{% endif %}</div>{% endfor %}</td>
+  <td>{% for v in p.variants %}<div class="tiny" style="color:{{ 'var(--danger)' if v.stock <= 0 else 'inherit' }}">{{ v.stock }}</div>{% endfor %}</td>
+  <td>
+    <form method="post" action="/admin/products/{{ p.id }}/toggle"><input type="hidden" name="csrf_token" value="{{ csrf }}"><input type="hidden" name="field" value="is_active"><button class="tag {{ 'on' if p.is_active }}" style="cursor:pointer">{{ _('ظاهر') if p.is_active else _('مخفي') }}</button></form>
+    <form method="post" action="/admin/products/{{ p.id }}/toggle"><input type="hidden" name="csrf_token" value="{{ csrf }}"><input type="hidden" name="field" value="is_featured"><button class="tag {{ 'on' if p.is_featured }}" style="cursor:pointer;margin-top:4px">{{ _('مميز') if p.is_featured else _('غير مميز') }}</button></form>
+  </td>
+  <td><div class="acts"><a class="btn ghost sm" href="/admin/products/{{ p.id }}/edit">{{ _('تعديل') }}</a>
+    <form method="post" action="/admin/products/{{ p.id }}/delete" data-confirm="{{ _('حذف المنتج «{name}»؟', name=p.name_ar) }}"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="btn danger sm">{{ _('حذف') }}</button></form></div></td>
+</tr>{% endfor %}</tbody></table>
+{% else %}<p class="empty">{{ _('ما فيه منتجات') }}.</p>{% endif %}
+</div>
+{% endblock %}

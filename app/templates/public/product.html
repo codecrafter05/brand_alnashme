@@ -1,0 +1,46 @@
+{% extends 'public/base.html' %}
+{% from 'public/partials/product_card.html' import card with context %}
+{% block title %}{{ L(product,'name') }} | {{ s.store_name }}{% endblock %}
+{% block desc %}{{ (L(product,'desc') or '')|truncate(155) }}{% endblock %}
+{% block content %}
+{% set vs = product.variants %}
+{% set first = (vs | selectattr('stock', 'gt', 0) | list | first) or (vs | first) %}
+{% set sm = summary(product) %}
+<div class="wrap">
+  <div class="pdp">
+    <div class="pdp-img">{% if product.image %}<img src="{{ product.image }}" alt="{{ L(product,'name') }}">{% endif %}</div>
+    <div class="pdp-info" data-product-form data-product="{{ product.id }}">
+      <div class="crumbs"><a href="/category/{{ product.category_id }}">{{ L(product.category,'name') }}</a></div>
+      <h1>{{ L(product,'name') }}</h1>
+      <div class="price" data-price-box>
+        {% if first %}<span class="now {{ 'sale' if on_sale(first) }}" data-now>{{ fmt(eff_price(first)) }} {{ t('currency') }}</span>
+        <del data-orig {{ 'hidden' if not on_sale(first) }}>{{ fmt(first.price) }}</del>{% endif %}
+      </div>
+      {% if L(product,'desc') %}<p class="pdp-desc">{{ L(product,'desc') }}</p>{% endif %}
+      {% if vs %}
+      <span class="field-label">{{ t('size') }}</span>
+      <div class="pills">
+        {% for v in vs %}
+        <label class="pill">
+          <input type="radio" name="variant" data-variant value="{{ v.id }}" data-now="{{ fmt(eff_price(v)) }}" data-orig="{{ fmt(v.price) if on_sale(v) else '' }}" data-stock="{{ v.stock }}"
+                 {{ 'disabled' if v.stock <= 0 }} {{ 'checked' if first and v.id == first.id }}>
+          <span>{{ v.label_ar if lang == 'ar' else v.label_en }}</span>
+        </label>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <div class="buy-row">
+        <div class="qty" data-qty><button type="button" data-dec aria-label="-">−</button><input data-qty-input value="1" inputmode="numeric" aria-label="{{ t('qty') }}"><button type="button" data-inc aria-label="+">+</button></div>
+        <button class="btn" type="button" data-add {{ 'disabled' if not sm.in_stock }}>{{ t('add_to_cart') if sm.in_stock else t('out_of_stock') }}</button>
+      </div>
+      <p class="stock-note" data-stock-note></p>
+    </div>
+  </div>
+  {% if related %}
+  <section class="section" style="padding-top:20px">
+    <div class="sec-head"><h2>{{ t('products_in') }} {{ L(product.category,'name') }}</h2></div>
+    <div class="grid">{% for p in related %}{{ card(p) }}{% endfor %}</div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

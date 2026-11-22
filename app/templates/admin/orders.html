@@ -1,0 +1,30 @@
+{% extends 'admin/base.html' %}
+{% block title %}{{ _('الطلبات') }}{% endblock %}
+{% block content %}
+<div class="top"><h1>{{ _('الطلبات') }}</h1></div>
+<div class="tabs">
+  <a class="{{ 'on' if not status }}" href="/admin/orders">{{ _('الكل') }}<small>{{ total_all }}</small></a>
+  {% for k in ['new','confirmed','delivered','cancelled'] %}<a class="{{ 'on' if status == k }}" href="/admin/orders?status={{ k }}">{{ status_labels[k] }}<small>{{ counts[k] }}</small></a>{% endfor %}
+</div>
+<form class="filters" method="get">{% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+  <input class="in" type="search" name="q" value="{{ q }}" placeholder="{{ _('رقم الطلب، الاسم، الهاتف، الإيميل') }}" style="min-width:280px"><button class="btn ghost sm">{{ _('بحث') }}</button></form>
+<div class="card">
+{% if orders %}
+<table class="tbl"><thead><tr><th>{{ _('الطلب') }}</th><th>{{ _('التاريخ') }}</th><th>{{ _('العميل') }}</th><th>{{ _('الهاتف') }}</th><th>{{ _('الإيميل') }}</th><th>{{ _('المنطقة') }}</th><th>{{ _('المنتجات') }}</th><th class="num">{{ _('الإجمالي') }}</th><th>{{ _('الحالة') }}</th><th></th></tr></thead><tbody>
+{% for o in orders %}
+<tr>
+  <td><b>#{{ o.order_number }}</b></td>
+  <td class="tiny">{{ o.created_at.strftime('%Y-%m-%d') }}<br>{{ o.created_at.strftime('%H:%M') }}</td>
+  <td>{{ o.customer_name }}</td>
+  <td dir="ltr" style="text-align:end">{{ o.phone }}</td>
+  <td class="tiny" dir="ltr">{{ o.email }}</td>
+  <td class="tiny">{{ o.zone_name }}</td>
+  <td class="tiny">{% for it in o.items[:2] %}<div>{{ it.name_ar }} × {{ it.qty }}</div>{% endfor %}{% if o.items|length > 2 %}<div class="muted">+{{ o.items|length - 2 }}</div>{% endif %}</td>
+  <td class="num"><b>{{ fmt(o.total) }}</b></td>
+  <td><span class="st st-{{ o.status }}">{{ status_labels[o.status] }}</span></td>
+  <td><a class="btn ghost sm" href="/admin/orders/{{ o.id }}">{{ _('عرض') }}</a></td>
+</tr>{% endfor %}</tbody></table>
+{% if pages > 1 %}<div class="pager">{% for n in range(1, pages + 1) %}{% if n == page %}<span class="on">{{ n }}</span>{% else %}<a href="/admin/orders?page={{ n }}{{ '&status=' ~ status if status }}{{ '&q=' ~ q|urlencode if q }}">{{ n }}</a>{% endif %}{% endfor %}</div>{% endif %}
+{% else %}<p class="empty">{{ _('ما فيه طلبات') }}.</p>{% endif %}
+</div>
+{% endblock %}

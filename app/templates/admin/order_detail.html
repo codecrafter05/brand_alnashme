@@ -1,0 +1,36 @@
+{% extends 'admin/base.html' %}
+{% block title %}{{ _('طلب') }} #{{ o.order_number }}{% endblock %}
+{% block content %}
+<div class="top"><h1>{{ _('طلب') }} #{{ o.order_number }} <span class="st st-{{ o.status }}" style="font-size:14px;vertical-align:middle">{{ status_labels[o.status] }}</span></h1>
+  <a class="btn ghost" href="/admin/orders">{{ _('رجوع') }}</a></div>
+<div class="grid2" style="grid-template-columns:1.4fr 1fr;align-items:start">
+  <div class="card"><h2>{{ _('المنتجات') }}</h2>
+    <table class="tbl"><thead><tr><th>{{ _('المنتج') }}</th><th>{{ _('الحجم') }}</th><th class="num">{{ _('السعر') }}</th><th class="num">{{ _('الكمية') }}</th><th class="num">{{ _('المجموع') }}</th></tr></thead><tbody>
+    {% for it in o.items %}<tr><td>{{ it.name_ar }}<br><span class="muted tiny" dir="ltr">{{ it.name_en }}</span></td><td>{{ it.label_ar }}</td><td class="num">{{ fmt(it.price) }}</td><td class="num">{{ it.qty }}</td><td class="num">{{ fmt(it.price * it.qty) }}</td></tr>{% endfor %}
+    </tbody></table>
+    <div style="margin-top:16px;margin-inline-start:auto;max-width:300px;display:grid;gap:6px">
+      <div style="display:flex;justify-content:space-between"><span class="muted">{{ _('المجموع') }}</span><span>{{ fmt(o.subtotal) }} {{ _('د.ب') }}</span></div>
+      <div style="display:flex;justify-content:space-between"><span class="muted">{{ _('التوصيل') }}</span><span>{{ _('مجاني') if o.delivery_fee == 0 else fmt(o.delivery_fee) ~ ' ' ~ _('د.ب') }}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:700;border-top:1px solid var(--line);padding-top:8px"><span>{{ _('الإجمالي') }}</span><span>{{ fmt(o.total) }} {{ _('د.ب') }}</span></div>
+    </div>
+  </div>
+  <div>
+    <div class="card"><h2>{{ _('إجراءات الطلب') }}</h2>
+      <p class="muted tiny" style="margin-top:0">{{ _('عند تأكيد الطلب ينقص المخزون تلقائياً، وإذا ألغيته يرجع') }}.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+      {% macro act(status, label, cls='') %}<form method="post" action="/admin/orders/{{ o.id }}/status"><input type="hidden" name="csrf_token" value="{{ csrf }}"><input type="hidden" name="status" value="{{ status }}"><button class="btn {{ cls }}">{{ label }}</button></form>{% endmacro %}
+      {% if o.status == 'new' %}{{ act('confirmed', _('تأكيد الطلب'), 'ok') }}{{ act('cancelled', _('إلغاء الطلب'), 'danger') }}
+      {% elif o.status == 'confirmed' %}{{ act('delivered', _('تم التوصيل'), 'ok') }}{{ act('cancelled', _('إلغاء الطلب'), 'danger') }}
+      {% elif o.status == 'delivered' %}{{ act('confirmed', _('رجوع إلى مؤكد'), 'ghost') }}
+      {% else %}{{ act('new', _('إعادة فتح الطلب'), 'ghost') }}{% endif %}
+      </div>
+      <a class="btn ghost" style="margin-top:12px;width:100%" href="{{ customer_wa }}" target="_blank" rel="noopener">{{ _('مراسلة العميل على الواتساب') }}</a>
+    </div>
+    <div class="card"><h2>{{ _('بيانات العميل') }}</h2>
+      <dl class="kv"><dt>{{ _('الاسم') }}</dt><dd>{{ o.customer_name }}</dd><dt>{{ _('الهاتف') }}</dt><dd dir="ltr" style="text-align:end">{{ o.phone }}</dd><dt>{{ _('الإيميل') }}</dt><dd dir="ltr" style="text-align:end">{{ o.email }}</dd>
+      <dt>{{ _('المنطقة') }}</dt><dd>{{ o.zone_name }}</dd><dt>{{ _('العنوان') }}</dt><dd>{{ _('منزل {h}، طريق {r}، بلوك {b}', h=o.house, r=o.road, b=o.block) }}</dd>
+      <dt>{{ _('الملاحظات') }}</dt><dd>{{ o.note or '—' }}</dd><dt>{{ _('التاريخ') }}</dt><dd>{{ o.created_at.strftime('%Y-%m-%d %H:%M') }}</dd><dt>{{ _('لغة الطلب') }}</dt><dd>{{ _('عربي') if o.lang == 'ar' else 'English' }}</dd></dl>
+    </div>
+  </div>
+</div>
+{% endblock %}

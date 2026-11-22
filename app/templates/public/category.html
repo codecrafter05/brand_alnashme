@@ -1,0 +1,13 @@
+{% extends 'public/base.html' %}
+{% from 'public/partials/product_card.html' import card with context %}
+{% block title %}{{ L(category,'name') }} | {{ s.store_name }}{% endblock %}
+{% block content %}
+<div class="wrap">
+  <div class="page-head">
+    <div class="crumbs"><a href="/">{{ t('home') }}</a> / <a href="/categories">{{ t('categories') }}</a></div>
+    <h1>{{ L(category,'name') }}</h1>
+  </div>
+  {% if products %}<div class="grid" style="padding-bottom:80px">{% for p in products %}{{ card(p) }}{% endfor %}</div>
+  {% else %}<p class="empty">{{ t('no_products') }}</p>{% endif %}
+</div>
+{% endblock %}
