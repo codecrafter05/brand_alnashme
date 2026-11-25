@@ -72,12 +72,16 @@ def seed_all(db: Session) -> None:
             db.add(DeliveryZone(name_ar=ar, name_en=en, price=price, sort_order=i))
         db.commit()
     if not db.query(Category).count():
+        img_i = 1
         for i, (cat_ar, cat_en, img, products) in enumerate(DEMO):
-            cat = Category(name_ar=cat_ar, name_en=cat_en, image=f"/static/demo/{img}.jpg", sort_order=i)
+            cat_img = f"/static/uploads/product-{img_i:02d}.jpg"
+            img_i += 1
+            cat = Category(name_ar=cat_ar, name_en=cat_en, image=cat_img, sort_order=i)
             db.add(cat)
             db.flush()
             for j, (n_ar, n_en, d_ar, d_en, variants, featured) in enumerate(products):
-                pimg = ["p1", "p2", "p3", "p4", "p5", "p6"][(i + j) % 6]
+                pimg = f"/static/uploads/product-{img_i:02d}.jpg"
+                img_i += 1
                 db.add(Product(category_id=cat.id, name_ar=n_ar, name_en=n_en, desc_ar=d_ar, desc_en=d_en,
-                               image=f"/static/demo/{pimg}.jpg", variants=variants, is_featured=featured))
+                               image=pimg, variants=variants, is_featured=featured))
         db.commit()

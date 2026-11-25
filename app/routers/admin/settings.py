@@ -31,7 +31,8 @@ def settings_page(request: Request, db: Session = Depends(get_db)):
 
 @router.post("", dependencies=[Depends(verify_csrf)])
 async def save_settings(request: Request, db: Session = Depends(get_db),
-                        hero_image: UploadFile = File(None)):
+                        hero_image: UploadFile = File(None),
+                        about_image: UploadFile = File(None)):
     form = await request.form()
     values = {k: str(form.get(k, "")).strip() for k in TEXT_FIELDS}
     wa = normalize_number(str(form.get("whatsapp_number", "")))
@@ -41,11 +42,19 @@ async def save_settings(request: Request, db: Session = Depends(get_db),
     values["whatsapp_number"] = wa
     values["free_delivery_enabled"] = "1" if form.get("free_delivery_enabled") else "0"
     values["free_delivery_threshold"] = f"{D(form.get('free_delivery_threshold') or 0):.3f}"
+    current = settings_service.get_settings(db)
     if hero_image is not None and hero_image.filename:
         try:
             url = await save_upload(hero_image, max_side=2000)
-            delete_upload(settings_service.get_settings(db).get("hero_image"))
+            delete_upload(current.get("hero_image"))
             values["hero_image"] = url
+        except ImageError as e:
+            flash(request, str(e), "err")
+    if about_image is not None and about_image.filename:
+        try:
+            url = await save_upload(about_image, max_side=2000)
+            delete_upload(current.get("about_image"))
+            values["about_image"] = url
         except ImageError as e:
             flash(request, str(e), "err")
     settings_service.save_settings(db, values)

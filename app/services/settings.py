@@ -24,6 +24,7 @@ DEFAULTS = {
     "about_title_en": "About Brand Alnashme",
     "about_text_ar": "نختار لك العطور بعناية، من العطور العربية الأصيلة إلى أشهر البراندات العالمية، مع دهن العود والبخور. اطلب عبر الواتساب وبنوصلك الطلب لين باب البيت.",
     "about_text_en": "We hand-pick fragrances for you, from authentic Arabic perfumes to leading international brands, alongside oud oils and bakhoor. Order via WhatsApp and we deliver to your door.",
+    "about_image": "/static/demo/wall.jpg",
     "whatsapp_number": DEFAULT_WHATSAPP,
     "contact_phone": "",
     "contact_email": "",
